@@ -1,46 +1,36 @@
 from newsapi import NewsApiClient
 
-# TO DO: Filter out the description: none result from the top 3 
+class story:
+    def __init__(self):
+        self.title = None
+        self.link = None
+        self.summary = None
 
-# Function to get entertainment headlines
-def getEntertainmentHeadlines(api_key):
+class categoryHeadlines:
+    def __init__(self, topic):
+        self.topic = topic
+        self.story1 = story()
+        self.story2 = story()
+        self.story3 = story()
+
+def getHeadlines(api_key,topicIn):
     newsapi = NewsApiClient(api_key=api_key)
-    
-    top_headlines = newsapi.get_top_headlines(
-            category="entertainment",
+    topHeadlines = newsapi.get_top_headlines(
+            category= topicIn,
             language='en',
         )
         
-    entertainment_headlines = [(article['title'], article['url']) for article in top_headlines['articles'][:3]]
-    
-    return entertainment_headlines
+    headlines = [(article['title'], article['url']) for article in topHeadlines['articles'][:3]]
+    return headlines
 
-# Function to get sports headlines
-def getSportsHeadlines(api_key):
-    newsapi = NewsApiClient(api_key=api_key)
-    
-    top_headlines = newsapi.get_top_headlines(
-            category="sports",
-            language='en',
-        )
-        
-    sports_headlines = [(article['title'], article['url']) for article in top_headlines['articles'][:3]]
-    
-    return sports_headlines
+def breakHeadlines(headlines,categoryHeadlinesIn):
+        categoryHeadlinesIn.story1.title, categoryHeadlinesIn.story1.link = headlines[0]
+        categoryHeadlinesIn.story2.title, categoryHeadlinesIn.story2.link = headlines[1]
+        categoryHeadlinesIn.story3.title, categoryHeadlinesIn.story3.title = headlines[2]
 
-# Function to print the headlines
-def print_headlines(headlines, category):
-    print(f"Top 3 {category.capitalize()} Stories:")
-    for index, headline in enumerate(headlines, 1):
-        print(f"\nStory {index}:")
-        print(f"  Title: {headline[0]}")
-        print(f"  URL: {headline[1]}")
-    print() 
-
-# Main script
 api_key = "ce2e201a09764e3f85fd47383a347b93"
-entertainment_headlines = getEntertainmentHeadlines(api_key)
-sports_headlines = getSportsHeadlines(api_key)
-
-print_headlines(entertainment_headlines, 'entertainment')
-print_headlines(sports_headlines, 'sports')
+test = categoryHeadlines("sports")
+breakHeadlines(getHeadlines(api_key, test.topic),test)
+getHeadlines(api_key, test.topic)
+print(test.story1.title)
+print(test.story2.link)
