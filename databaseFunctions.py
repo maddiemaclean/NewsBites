@@ -1,5 +1,3 @@
-# -------- DATABASE FUNCTIONS --------
-
 import sqlite3
 
 def getEmailList():
@@ -19,33 +17,49 @@ def getEmailList():
 
     conn.close()
 
-def AddEmail(emailIn):
+def addEmail(emailIn):
     conn = sqlite3.connect('newsletter.db')
     cursor = conn.cursor()
-    cursor.execute('insert into emails (emailAddress) VALUES ('+ emailIn +');')
+    
+    # Using parameterized query to avoid SQL injection
+    cursor.execute('INSERT INTO emails (emailAddress) VALUES (?)', (emailIn,))
+    
     conn.commit()
     conn.close()
 
 def searchEmails(emailIn):
     conn = sqlite3.connect('newsletter.db')
     cursor = conn.cursor()
-    cursor.excute('SELECT 1 FROM emails WHERE emailAddress = '+ emailIn + '')
+    
+    # Using parameterized query
+    cursor.execute('SELECT 1 FROM emails WHERE emailAddress = ?', (emailIn,))
     result = cursor.fetchone()
-    conn.commit()
+    
     conn.close()
+    
     if result:
         return True
     else:
         return False
 
-
 def removeEmail(emailIn):
-    if searchEmails(emailIn) == False:
-        return False # email cannot be found in the database. We cannot remove something that doesn't exist.
+    if not searchEmails(emailIn):
+        return False  # email cannot be found in the database.
     else:
         conn = sqlite3.connect('newsletter.db')
         cursor = conn.cursor()
-        cursor.excute('DELETE FROM emails WHERE emailAddress = '+emailIn +'')
+        
+        # Using parameterized query
+        cursor.execute('DELETE FROM emails WHERE emailAddress = ?', (emailIn,))
+        
         conn.commit()
         conn.close()
-        return True # email successfully removed
+        return True  # email successfully removed
+
+# -------- MAIN --------
+email = "pidgepurr@gmail.com"
+getEmailList()
+addEmail(email)
+getEmailList()
+removeEmail(email)
+getEmailList()
